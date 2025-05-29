@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { ArrowLeft, MapPin, Clock, DollarSign, Star, Upload, ExternalLink } from 'lucide-react';
+import Navbar from '../components/ui/Navbar';
+import Footer from '../components/ui/Footer';
 
 export default function JobPortal() {
   const [currentView, setCurrentView] = useState('details'); // 'details' or 'application'
@@ -27,7 +29,7 @@ export default function JobPortal() {
   const JobDetailsPage = () => (
     <div className="min-h-screen bg-gray-50">
       {/* Breadcrumb */}
-      <div className="bg-white border-b px-6 py-3">
+      {/* <div className="bg-white border-b px-6 py-3">
         <div className="max-w-4xl mx-auto">
           <nav className="text-sm text-gray-500">
             <span>Home</span> <span className="mx-2">/</span>
@@ -35,8 +37,8 @@ export default function JobPortal() {
             <span className="text-gray-900">Senior Frontend Developer</span>
           </nav>
         </div>
-      </div>
-
+      </div> */}
+  <Navbar/>
       <div className="max-w-4xl mx-auto px-6 py-8">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-sm p-8 mb-6">
@@ -250,13 +252,15 @@ export default function JobPortal() {
           </div>
         </div>
       </div>
+      <Footer/>
     </div>
   );
 
   const JobApplicationPage = () => (
     <div className="min-h-screen bg-gray-50">
+      <Navbar/>
       {/* Breadcrumb */}
-      <div className="bg-white border-b px-6 py-3">
+      {/* <div className="bg-white border-b px-6 py-3">
         <div className="max-w-4xl mx-auto">
           <nav className="text-sm text-gray-500">
             <span>Home</span> <span className="mx-2">/</span>
@@ -264,7 +268,7 @@ export default function JobPortal() {
             <span className="text-gray-900">Senior Frontend Developer</span>
           </nav>
         </div>
-      </div>
+      </div> */}
 
       <div className="max-w-4xl mx-auto px-6 py-8">
         {/* Header */}
@@ -478,7 +482,9 @@ export default function JobPortal() {
           </div>
         </div>
       </div>
+      <Footer/>
     </div>
+    
   );
 
   return currentView === 'details' ? <JobDetailsPage /> : <JobApplicationPage />;

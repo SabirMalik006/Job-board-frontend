@@ -6,13 +6,18 @@ import { Separator } from "../components/ui/separator";
 import { Eye, EyeOff } from "lucide-react";
 import { FormCard, FormCardContent } from "../components/ui/cardd";
 import { Link } from "react-router-dom";
+import Navbar from "../components/ui/Navbar";
+import Footer from "../components/ui/Footer";
 
 const SignupForm = () => {
   // Password toggle state
-  const [showPassword, setShowPassword] = React.useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
-
-  return (
+  
+    
+    const [showPassword, setShowPassword] = React.useState(false); const
+    [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
+    return (
+      <>
+      <Navbar />
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-12">
       <FormCard className="w-full max-w-md bg-white shadow-lg border-0">
         <FormCardContent className="p-8">
@@ -221,7 +226,10 @@ const SignupForm = () => {
         </FormCardContent>
       </FormCard>
     </div>
-  );
+    <Footer />
+    </>
+    );
+  
 };
 
 export default SignupForm;

@@ -8,13 +8,16 @@ import { Eye, EyeOff } from "lucide-react";
 import { FormCard, FormCardContent } from "../components/ui/cardd";
 import { Link } from "react-router-dom";
 import Navbar from "../components/ui/Navbar";
+import Footer from "../components/ui/Footer";
 
 const LoginForm = () => {
   // Password toggle state
-  <Navbar />
+  
   const [showPassword, setShowPassword] = React.useState(false);
 
   return (
+    <>
+    <Navbar />
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-12">
       <FormCard className="w-full max-w-md bg-white shadow-lg border-0">
         <FormCardContent className="p-8">
@@ -162,6 +165,8 @@ const LoginForm = () => {
         </FormCardContent>
       </FormCard>
     </div>
+    <Footer />
+    </>
   );
 };
 

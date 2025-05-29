@@ -7,6 +7,8 @@ import SignupForm2 from './SignupForm2';
 // import JobDescription from './JobDescription';
 import JobDetails from './JobDetails'
 import Company from './Company'
+import Jobs from './Jobs'
+// import Card from '../components/ui/Card';
 const HomePage = () => {
   return (
     <Router>
@@ -17,9 +19,8 @@ const HomePage = () => {
         <Route path="/signup2" element={<SignupForm2/>} />
         <Route path='/JobDetails' element={<JobDetails/>}/>
         <Route path='/Company' element={<Company/>}/>
-        
-
-        
+        <Route path='/JobDescription' element={<JobDetails/>}/>
+        <Route path="/jobs" element={<Jobs />} />
       </Routes>
     </Router>
   );
