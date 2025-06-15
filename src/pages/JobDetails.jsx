@@ -1,96 +1,165 @@
-import React, { useState } from 'react';
-import { ArrowLeft, MapPin, Clock, DollarSign, Star, Upload, ExternalLink } from 'lucide-react';
-import Navbar from '../components/ui/Navbar';
-import Footer from '../components/ui/Footer';
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import axios from "axios";
+import { MapPin, Calendar, DollarSign } from "lucide-react";
+import Navbar from "../components/ui/Navbar";
+import Footer from "../components/ui/Footer";
+import { Link } from "react-router-dom";
 
-export default function JobPortal() {
-  const [currentView, setCurrentView] = useState('details'); // 'details' or 'application'
-  const [applicationData, setApplicationData] = useState({
-    fullName: '',
-    email: '',
-    phoneNumber: '',
-    resumeCV: '',
-    coverLetter: '',
-    linkedinProfile: '',
-    githubProfile: '',
-    portfolioWebsite: '',
-    earliestStartDate: '',
-    howDidYouHear: '',
-    willingToRelocate: false
-  });
+function JobDetail() {
+  const { id } = useParams();
+  const [job, setJob] = useState(null);
 
-  const handleInputChange = (field, value) => {
-    setApplicationData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
+  useEffect(() => {
+    axios
+      .get(`http://localhost:5000/jobs/jobs/${id}`)
+      .then((res) => {
+        if (res.data.status === "success") {
+          setJob(res.data.data);
+        }
+      })
+      .catch((err) => {
+        console.error("API error:", err);
+      });
+  }, [id]);
 
-  const JobDetailsPage = () => (
-    <div className="min-h-screen bg-gray-50">
-      {/* Breadcrumb */}
-      {/* <div className="bg-white border-b px-6 py-3">
-        <div className="max-w-4xl mx-auto">
-          <nav className="text-sm text-gray-500">
-            <span>Home</span> <span className="mx-2">/</span>
-            <span>Jobs</span> <span className="mx-2">/</span>
-            <span className="text-gray-900">Senior Frontend Developer</span>
-          </nav>
-        </div>
-      </div> */}
-  <Navbar/>
-      <div className="max-w-4xl mx-auto px-6 py-8">
-        {/* Header */}
-        <div className="bg-white rounded-lg shadow-sm p-8 mb-6">
-          <div className="flex items-start justify-between">
-            <div className="flex items-start space-x-4">
-              <div className="w-16 h-16 bg-white rounded-lg border flex items-center justify-center">
-                <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">G</span>
+  if (!job) {
+    return (
+      <div className="text-center mt-20 text-gray-600">
+        Loading job details...
+      </div>
+    );
+  }
+
+  // String se array me convert karna
+  const skills = JSON.parse(job.tags || "[]");
+  const responsibilities = JSON.parse(job.responsibilities || "[]");
+  const requirements = JSON.parse(job.requirements || "[]");
+  const benefits = JSON.parse(job.benefits || "[]");
+
+  // const handleSaveJob = async () => {
+  //   try {
+  //     const token = localStorage.getItem("token");
+  
+  //     if (!token) {
+  //       alert("Please login first to save the job.");
+  //       return;
+  //     }
+  
+  //     await axios.post(
+  //       "http://localhost:5000/jobs/saved",
+  //       { jobId: job.id },
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       }
+  //     );
+  
+  //     alert("Job saved successfully!");
+  //   } catch (err) {
+  //     console.error("Error saving job:", err);
+  //     alert("Failed to save the job. It might be already saved.");
+  //   }
+  // };
+  
+
+  return (
+    <>
+      <Navbar />
+      <div className="min-h-screen pby-8 bg-gray-50  bg-white rounded-lg shadow-sm  mb-8 border border-gray-100 mx-10 my-5">
+        <div className="w-full ">
+          {/* Header Section */}
+          <div className="w-full bg-white rounded-lg shadow-sm  p-6 mb-6 border border-gray-100 relative">
+            {/* Centered Title */}
+            <h1 className="absolute left-1/2 top-2 transform -translate-x-1/2 text-3xl font-bold text-gray-900 pt-5">
+              {job.title}
+            </h1>
+
+            <div className="flex items-center justify-between pt-12 mb-12  ">
+              {/* Left - Logo + Info */}
+              <div className="flex items-start gap-4">
+                <div className="w-14 h-14 bg-blue-500 rounded-lg flex items-center justify-center">
+                  <span className="text-white font-bold text-lg">
+                    {job.company.charAt(0)}
+                  </span>
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <div className="flex items-center gap-4">
+                    <p className="text-base text-gray-700 font-semibold">
+                      {job.company}
+                    </p>
+                    <p className="text-base text-gray-700 font-semibold">
+                      {job.rating}🌟
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap gap-5 text-sm text-gray-600 mt-2">
+                    <div className="flex items-center gap-1 bg-gray-100 text-black px-2 py-1 rounded-md">
+                      <MapPin size={16} />
+                      <span>{job.location}</span>
+                    </div>
+
+                    <div className="flex items-center gap-1 bg-gray-100 text-black px-2 py-1 rounded-md">
+                      <Calendar size={16} />
+                      <span>{job.posted}</span>
+                    </div>
+                    <div className="flex items-center gap-1 bg-gray-100 text-black px-2 py-1 rounded-md">
+                      <DollarSign size={16} />
+                      <span>{job.salary}</span>
+                    </div>
+                    <div className="flex items-center gap-1 bg-gray-100 text-black px-2 py-1 rounded-md">
+                      <DollarSign size={16} />
+                      <span>{job.experience}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900 mb-2">Senior Frontend Developer</h1>
-                <div className="text-gray-600 mb-2">TechCorp Solutions • 4.8 ⭐</div>
-                <div className="flex items-center space-x-4 text-sm text-gray-500">
-                  <div className="flex items-center">
-                    <MapPin className="w-4 h-4 mr-1" />
-                    New York, NY
-                  </div>
-                  <div className="flex items-center">
-                    <Clock className="w-4 h-4 mr-1" />
-                    Full-time
-                  </div>
-                  <div>2 days ago</div>
-                  <div className="flex items-center">
-                    <DollarSign className="w-4 h-4 mr-1" />
-                    $90,000 - $120,000
-                  </div>
+
+              {/* Right - Apply Button */}
+              <div className="m-8">
+                <div className="text-center">
+                  <Link
+                    to={`/job/apply/${job._id}`}
+                    className="bg-purple-600 text-white px-4 py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors inline-block"
+                  >
+                    Apply Now
+                  </Link>
                 </div>
               </div>
+              {/* Save Job Button
+              <div className="text-center mt-6">
+                <button
+                  onClick={handleSaveJob}
+                  className="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors inline-block"
+                >
+                  Save Job
+                </button>
+              </div> */}
             </div>
-            <button
-              onClick={() => setCurrentView('application')}
-              className="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition duration-200"
-            >
-              Apply Now
-            </button>
           </div>
-        </div>
 
-        {/* Job Description */}
-        <div className="bg-white rounded-lg shadow-sm p-8 mb-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Job Description</h2>
-          <p className="text-gray-600 leading-relaxed mb-6">
-            TechCorp Solutions is seeking a skilled Senior Frontend Developer to join our innovative team. The ideal candidate will have a strong background in React and modern JavaScript frameworks, with a passion for creating exceptional user experiences.
-          </p>
+          {/* Job Description */}
+          <div className="m-8">
+            <h2 className="text-xl font-bold text-gray-900 mb-4 text-center">
+              Job Description
+            </h2>
+            <p className="text-gray-700 leading-relaxed text-left">
+              {job.description}
+            </p>
+          </div>
 
           {/* Key Skills */}
-          <div className="mb-8">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Key Skills</h3>
-            <div className="flex flex-wrap gap-2">
-              {['React', 'JavaScript', 'Tailwind CSS', 'Redux', 'TypeScript'].map((skill) => (
-                <span key={skill} className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
+          <div className="m-8">
+            <h2 className="text-xl font-bold text-gray-900 mb-4 text-center">
+              Key Skills
+            </h2>
+            <div className="flex flex-wrap gap-2 justify-start">
+              {JSON.parse(job.tags).map((skill, index) => (
+                <span
+                  key={index}
+                  className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium"
+                >
                   {skill}
                 </span>
               ))}
@@ -98,394 +167,66 @@ export default function JobPortal() {
           </div>
 
           {/* Responsibilities */}
-          <div className="mb-8">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Responsibilities</h3>
-            <ul className="space-y-2 text-gray-600">
-              <li className="flex items-start">
-                <span className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                Design and develop high-quality web applications using React and related technologies
-              </li>
-              <li className="flex items-start">
-                <span className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                Collaborate with UX/UI designers to implement responsive and intuitive interfaces
-              </li>
-              <li className="flex items-start">
-                <span className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                Ensure cross-browser compatibility and optimize applications for maximum speed
-              </li>
-              <li className="flex items-start">
-                <span className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                Work with backend developers to integrate RESTful APIs and other services
-              </li>
-              <li className="flex items-start">
-                <span className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                Write clean, maintainable, and well-documented code following best practices
-              </li>
-              <li className="flex items-start">
-                <span className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                Participate in code reviews and mentor junior developers
-              </li>
+          <div className="m-8">
+            <h2 className="text-xl font-bold text-gray-900 mb-4 text-center">
+              Responsibilities
+            </h2>
+            <ul className="space-y-3 text-left">
+              {JSON.parse(job.responsibilities).map((item, index) => (
+                <li key={index} className="flex items-start gap-3">
+                  <div className="w-2 h-2 bg-purple-600 rounded-full mt-2 flex-shrink-0"></div>
+                  <span className="text-gray-700">{item}</span>
+                </li>
+              ))}
             </ul>
           </div>
 
           {/* Requirements */}
-          <div className="mb-8">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Requirements</h3>
-            <ul className="space-y-2 text-gray-600">
-              <li className="flex items-start">
-                <span className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                5+ years of experience with React and modern JavaScript (ES6+)
-              </li>
-              <li className="flex items-start">
-                <span className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                Strong knowledge of HTML5, CSS3, and responsive design principles
-              </li>
-              <li className="flex items-start">
-                <span className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                Experience with state management libraries (Redux, Context API, etc.)
-              </li>
-              <li className="flex items-start">
-                <span className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                Familiarity with TypeScript and testing frameworks (Jest, React Testing Library)
-              </li>
-              <li className="flex items-start">
-                <span className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                Understanding of CI/CD pipelines and version control systems (Git)
-              </li>
-              <li className="flex items-start">
-                <span className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                Bachelor's degree in Computer Science or equivalent experience
-              </li>
+          <div className="m-8">
+            <h2 className="text-xl font-bold text-gray-900 mb-4 text-center">
+              Requirements
+            </h2>
+            <ul className="space-y-3 text-left">
+              {JSON.parse(job.requirements).map((item, index) => (
+                <li key={index} className="flex items-start gap-3">
+                  <div className="w-2 h-2 bg-purple-600 rounded-full mt-2 flex-shrink-0"></div>
+                  <span className="text-gray-700">{item}</span>
+                </li>
+              ))}
             </ul>
           </div>
 
           {/* Benefits */}
-          <div className="mb-8">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Benefits</h3>
-            <ul className="space-y-2 text-gray-600">
-              <li className="flex items-start">
-                <span className="w-2 h-2 bg-green-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                Competitive salary and performance bonuses
-              </li>
-              <li className="flex items-start">
-                <span className="w-2 h-2 bg-green-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                Comprehensive health, dental, and vision insurance
-              </li>
-              <li className="flex items-start">
-                <span className="w-2 h-2 bg-green-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                401(k) matching program
-              </li>
-              <li className="flex items-start">
-                <span className="w-2 h-2 bg-green-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                Flexible work hours and remote work options
-              </li>
-              <li className="flex items-start">
-                <span className="w-2 h-2 bg-green-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                Professional development budget
-              </li>
-              <li className="flex items-start">
-                <span className="w-2 h-2 bg-green-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                Modern office with snacks and beverages
-              </li>
+          <div className="m-8">
+            <h2 className="text-xl font-bold text-gray-900 mb-4 text-center">
+              Benefits
+            </h2>
+            <ul className="space-y-3 text-left">
+              {JSON.parse(job.benefits).map((item, index) => (
+                <li key={index} className="flex items-start gap-3">
+                  <div className="w-2 h-2 bg-purple-600 rounded-full mt-2 flex-shrink-0"></div>
+                  <span className="text-gray-700">{item}</span>
+                </li>
+              ))}
             </ul>
           </div>
 
-          <button
-            onClick={() => setCurrentView('application')}
-            className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 transition duration-200"
-          >
-            Apply for this Position
-          </button>
-        </div>
-
-        {/* Similar Jobs */}
-        <div className="bg-white rounded-lg shadow-sm p-8">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">Similar Jobs You Might Like</h2>
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="border rounded-lg p-6">
-              <div className="flex items-start space-x-4 mb-4">
-                <div className="w-12 h-12 bg-white rounded-lg border flex items-center justify-center">
-                  <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">
-                    <span className="text-white font-bold text-sm">G</span>
-                  </div>
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900">React Developer</h3>
-                  <p className="text-gray-600 text-sm">WebCorp Solutions</p>
-                  <div className="flex items-center text-sm text-gray-500 mt-1">
-                    <Star className="w-4 h-4 mr-1 fill-current text-yellow-400" />
-                    <span>4.7</span>
-                  </div>
-                </div>
-              </div>
-              <div className="text-sm text-gray-500 mb-4">
-                Remote • Full-time
-              </div>
-              <button className="text-blue-600 hover:text-blue-700 font-medium text-sm">
-                View Details
-              </button>
-            </div>
-
-            <div className="border rounded-lg p-6">
-              <div className="flex items-start space-x-4 mb-4">
-                <div className="w-12 h-12 bg-white rounded-lg border flex items-center justify-center">
-                  <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">
-                    <span className="text-white font-bold text-sm">G</span>
-                  </div>
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900">Frontend Engineer</h3>
-                  <p className="text-gray-600 text-sm">DigitalCraft Inc.</p>
-                  <div className="flex items-center text-sm text-gray-500 mt-1">
-                    <Star className="w-4 h-4 mr-1 fill-current text-yellow-400" />
-                    <span>4.9</span>
-                  </div>
-                </div>
-              </div>
-              <div className="text-sm text-gray-500 mb-4">
-                San Francisco, CA • Full-time
-              </div>
-              <button className="text-blue-600 hover:text-blue-700 font-medium text-sm">
-                View Details
-              </button>
+          {/* Apply Button */}
+          <div className="m-8">
+            <div className="text-center">
+              <Link
+                to={`/job/apply/${job._id}`}
+                className="bg-purple-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors inline-block"
+              >
+                Apply for this Position
+              </Link>
             </div>
           </div>
         </div>
       </div>
-      <Footer/>
-    </div>
+      <Footer />
+    </>
   );
-
-  const JobApplicationPage = () => (
-    <div className="min-h-screen bg-gray-50">
-      <Navbar/>
-      {/* Breadcrumb */}
-      {/* <div className="bg-white border-b px-6 py-3">
-        <div className="max-w-4xl mx-auto">
-          <nav className="text-sm text-gray-500">
-            <span>Home</span> <span className="mx-2">/</span>
-            <span>Jobs</span> <span className="mx-2">/</span>
-            <span className="text-gray-900">Senior Frontend Developer</span>
-          </nav>
-        </div>
-      </div> */}
-
-      <div className="max-w-4xl mx-auto px-6 py-8">
-        {/* Header */}
-        <div className="bg-white rounded-lg shadow-sm p-8 mb-6">
-          <div className="flex items-start justify-between">
-            <div className="flex items-start space-x-4">
-              <div className="w-16 h-16 bg-white rounded-lg border flex items-center justify-center">
-                <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">G</span>
-                </div>
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900 mb-2">Senior Frontend Developer</h1>
-                <div className="text-gray-600 mb-2">TechCorp Solutions • 4.8 ⭐</div>
-                <div className="flex items-center space-x-4 text-sm text-gray-500">
-                  <div className="flex items-center">
-                    <MapPin className="w-4 h-4 mr-1" />
-                    New York, NY
-                  </div>
-                  <div className="flex items-center">
-                    <Clock className="w-4 h-4 mr-1" />
-                    Full-time
-                  </div>
-                  <div>2 days ago</div>
-                  <div className="flex items-center">
-                    <DollarSign className="w-4 h-4 mr-1" />
-                    $90,000 - $120,000
-                  </div>
-                </div>
-              </div>
-            </div>
-            <button
-              onClick={() => setCurrentView('details')}
-              className="border border-gray-300 text-gray-700 px-6 py-3 rounded-lg font-medium hover:bg-gray-50 transition duration-200"
-            >
-              View Details
-            </button>
-          </div>
-        </div>
-
-        {/* Application Form */}
-        <div className="bg-white rounded-lg shadow-sm p-8">
-          <h2 className="text-xl font-semibold text-gray-900 mb-8">Application Form</h2>
-
-          {/* Personal Information */}
-          <div className="mb-8">
-            <h3 className="text-lg font-semibold text-gray-900 mb-6">Personal Information</h3>
-            <div className="grid md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Full Name *
-                </label>
-                <input
-                  type="text"
-                  value={applicationData.fullName}
-                  onChange={(e) => handleInputChange('fullName', e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Email Address *
-                </label>
-                <input
-                  type="email"
-                  value={applicationData.email}
-                  onChange={(e) => handleInputChange('email', e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Phone Number *
-                </label>
-                <input
-                  type="tel"
-                  value={applicationData.phoneNumber}
-                  onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Resume/CV *
-                </label>
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition duration-200">
-                  <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                  <p className="text-sm text-gray-600">Upload Resume (PDF, DOC, DOCX)</p>
-                  <input type="file" className="hidden" accept=".pdf,.doc,.docx" />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Additional Information */}
-          <div className="mb-8">
-            <h3 className="text-lg font-semibold text-gray-900 mb-6">Additional Information</h3>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Cover Letter
-              </label>
-              <textarea
-                value={applicationData.coverLetter}
-                onChange={(e) => handleInputChange('coverLetter', e.target.value)}
-                rows={6}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-          </div>
-
-          {/* Links */}
-          <div className="grid md:grid-cols-3 gap-6 mb-8">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                LinkedIn Profile
-              </label>
-              <input
-                type="url"
-                value={applicationData.linkedinProfile}
-                onChange={(e) => handleInputChange('linkedinProfile', e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                GitHub Profile
-              </label>
-              <input
-                type="url"
-                value={applicationData.githubProfile}
-                onChange={(e) => handleInputChange('githubProfile', e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Portfolio Website
-              </label>
-              <input
-                type="url"
-                value={applicationData.portfolioWebsite}
-                onChange={(e) => handleInputChange('portfolioWebsite', e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-          </div>
-
-          {/* Additional Questions */}
-          <div className="grid md:grid-cols-2 gap-6 mb-8">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Earliest Start Date
-              </label>
-              <input
-                type="date"
-                value={applicationData.earliestStartDate}
-                onChange={(e) => handleInputChange('earliestStartDate', e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                How did you hear about us?
-              </label>
-              <input
-                type="text"
-                value={applicationData.howDidYouHear}
-                onChange={(e) => handleInputChange('howDidYouHear', e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-          </div>
-
-          {/* Checkbox */}
-          <div className="mb-8">
-            <label className="flex items-start">
-              <input
-                type="checkbox"
-                checked={applicationData.willingToRelocate}
-                onChange={(e) => handleInputChange('willingToRelocate', e.target.checked)}
-                className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 mt-0.5"
-              />
-              <span className="ml-3 text-sm text-gray-700">I am willing to relocate if necessary</span>
-            </label>
-          </div>
-
-          {/* Disclaimer */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-8">
-            <div className="flex items-start">
-              <div className="w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-white text-xs">i</span>
-              </div>
-              <p className="ml-3 text-sm text-blue-800">
-                By submitting this application, I certify that all information provided is accurate and complete to the best of my knowledge. I understand that any false statements or omissions may disqualify me from further consideration for employment.
-              </p>
-            </div>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex justify-between">
-            <button
-              onClick={() => setCurrentView('details')}
-              className="flex items-center text-gray-600 hover:text-gray-800 font-medium"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Details
-            </button>
-            <button className="bg-blue-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-blue-700 transition duration-200">
-              Submit Application
-            </button>
-          </div>
-        </div>
-      </div>
-      <Footer/>
-    </div>
-    
-  );
-
-  return currentView === 'details' ? <JobDetailsPage /> : <JobApplicationPage />;
 }
+
+export default JobDetail;

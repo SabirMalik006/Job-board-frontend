@@ -1,7 +1,14 @@
-import React from "react"
-import { Search, MapPin, ChevronDown } from "lucide-react"
+import React, { useState } from "react";
+import { Search, MapPin, ChevronDown } from "lucide-react";
 
-function HeroSection() {
+function HeroSection({ onSearch }) {
+  const [keyword, setKeyword] = useState("");
+  const [location, setLocation] = useState("");
+
+  const handleSearch = () => {
+    onSearch({ keyword, location });
+  };
+
   return (
     <section className="bg-[#8824e6] py-20 px-6 text-center text-white">
       <div className="max-w-4xl mx-auto">
@@ -17,6 +24,8 @@ function HeroSection() {
               type="text"
               placeholder="Job title, keywords, or company"
               className="outline-none flex-grow text-sm text-white bg-transparent  placeholder-white"
+              value={keyword}
+              onChange={(e) => setKeyword(e.target.value)}
             />
           </div>
 
@@ -27,6 +36,8 @@ function HeroSection() {
               type="text"
               placeholder="Location"
               className="outline-none flex-grow text-sm text-white bg-transparent placeholder-white"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
             />
           </div>
 
@@ -37,7 +48,10 @@ function HeroSection() {
           </button>
 
           {/* Search Button */}
-          <button className="bg-white text-[#8824e6] px-4 py-2 rounded hover:bg-gray-100 rounded-full transition flex items-center">
+          <button
+            onClick={handleSearch}
+            className="bg-white text-[#8824e6] px-4 py-2 rounded hover:bg-gray-100 rounded-full transition flex items-center"
+          >
             <Search size={20} />
           </button>
         </div>
@@ -46,15 +60,15 @@ function HeroSection() {
         <div className="flex flex-col sm:flex-row justify-center items-center gap-3">
           <span className="text-sm font-medium">Popular:</span>
           <div className="flex flex-wrap gap-2 mt-1 sm:mt-0">
-            <button className="bg-white text-[#8824e6] hover:bg-gray-100 text-sm px-3 py-1 rounded-full">Remote</button>
-            <button className="bg-white text-[#8824e6] hover:bg-gray-100 text-sm px-3 py-1 rounded-full">Developer</button>
-            <button className="bg-white text-[#8824e6] hover:bg-gray-100 text-sm px-3 py-1 rounded-full">Design</button>
-            <button className="bg-white text-[#8824e6] hover:bg-gray-100 text-sm px-3 py-1 rounded-full">Marketing</button>
+            <button onClick={() => setKeyword("Remote")} className="bg-white text-[#8824e6] hover:bg-gray-100 text-sm px-3 py-1 rounded-full">Remote</button>
+            <button onClick={() => setKeyword("Developer")} className="bg-white text-[#8824e6] hover:bg-gray-100 text-sm px-3 py-1 rounded-full">Developer</button>
+            <button onClick={() => setKeyword("Design")} className="bg-white text-[#8824e6] hover:bg-gray-100 text-sm px-3 py-1 rounded-full">Design</button>
+            <button onClick={() => setKeyword("Marketing")} className="bg-white text-[#8824e6] hover:bg-gray-100 text-sm px-3 py-1 rounded-full">Marketing</button>
           </div>
         </div>
       </div>
     </section>
-  )
+  );
 }
 
-export default HeroSection
+export default HeroSection;
